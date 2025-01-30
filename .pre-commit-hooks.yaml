@@ -7,7 +7,7 @@
 - id: commit_message_uppercase
   name: Commit Message Starts with Uppercase
   description: Verifies that the commit message starts with an uppercase letter.
-  entry: commit_message_uppercase
+  entry: python pre_commit_hooks/commit_message_uppercase.py
   language: python
   stages: [commit-msg]
 - id: pre_commit_hook
