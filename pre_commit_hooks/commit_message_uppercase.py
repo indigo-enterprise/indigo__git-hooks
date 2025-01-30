@@ -6,6 +6,7 @@ def main():
     with open(commit_msg_file, "r", encoding="utf-8") as f:
         commit_msg = f.readline().strip()
 
+    print(f"{commit_msg} --> mensaje")
     if not commit_msg or not commit_msg[0].isupper():
         print("El mensaje de commit debe empezar con una letra mayuscula.")
         return 1
