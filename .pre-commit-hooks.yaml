@@ -1,9 +1,9 @@
-- id: custom-check
-  name: Custom Check Hook
-  description: Un hook personalizado para validar algo.
-  entry: python pre_commit_hooks/custom-check.py
-  language: script
-  types: [file]
+# - id: custom-check
+#   name: Custom Check Hook
+#   description: Un hook personalizado para validar algo.
+#   entry: python pre_commit_hooks/custom-check.py
+#   language: script
+#   types: [file]
 - id: commit-message-uppercase
   name: Commit Message Uppercase
   description: Verifica que el mensaje de commit comience con mayúscula.
@@ -11,26 +11,20 @@
   language: python
   always_run: true
   # stages: [commit-msg]
-# - id: commit_message_uppercase
-#   name: Commit Message Starts with Uppercase
-#   description: Verifies that the commit message starts with an uppercase letter.
-#   entry: commit_message_uppercase
+# - id: pre_commit_hook
+#   name: Check hardcoded credentials
+#   description: Checks the commit additions in order to prevent credentials to be pushed to GitHub.
+#   entry: pre_commit_hook
 #   language: python
-#   stages: [commit-msg]
-- id: pre_commit_hook
-  name: Check hardcoded credentials
-  description: Checks the commit additions in order to prevent credentials to be pushed to GitHub.
-  entry: pre_commit_hook
-  language: python
-  always_run: true
-  minimum_pre_commit_version: '2.0.0'
-- id: post_commit_hook
-  name: Notifies pre-commit status
-  description: Notifies pre-commit status.
-  entry: post_commit_hook
-  language: python
-  always_run: true
-  minimum_pre_commit_version: '2.0.0'
+#   always_run: true
+#   minimum_pre_commit_version: '2.0.0'
+# - id: post_commit_hook
+#   name: Notifies pre-commit status
+#   description: Notifies pre-commit status.
+#   entry: post_commit_hook
+#   language: python
+#   always_run: true
+#   minimum_pre_commit_version: '2.0.0'
 # -   id: check-added-large-files
 #     name: check for added large files
 #     description: prevents giant files from being committed.
