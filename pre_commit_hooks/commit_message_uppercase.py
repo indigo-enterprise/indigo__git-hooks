@@ -17,7 +17,7 @@ def get_commit_message():
 
 def main():
     commit_msg = get_commit_message()
-
+    print(f"{commit_msg} -- commit_msg")
     if not commit_msg or not commit_msg[0].isupper():
         print("El mensaje de commit debe empezar con una letra mayúscula.")
         print("Usa `git commit --amend` para corregir el mensaje.")
