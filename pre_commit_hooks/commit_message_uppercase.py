@@ -2,7 +2,7 @@ import sys
 
 def main():
     commit_msg_file = sys.argv[1]
-    print(commit_msg_file)
+    
     with open(commit_msg_file, "r", encoding="utf-8") as f:
         commit_msg = f.readline().strip()
 
