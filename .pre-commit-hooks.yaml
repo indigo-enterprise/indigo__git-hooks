@@ -4,12 +4,18 @@
   entry: python pre_commit_hooks/custom-check.py
   language: script
   types: [file]
-- id: commit_message_uppercase
-  name: Commit Message Starts with Uppercase
-  description: Verifies that the commit message starts with an uppercase letter.
-  entry: commit_message_uppercase
+- id: commit-message-uppercase
+  name: Commit Message Uppercase
+  description: Verifica que el mensaje de commit comience con mayúscula.
+  entry: python3 pre_commit_hooks/commit_message_uppercase.py
   language: python
   stages: [commit-msg]
+# - id: commit_message_uppercase
+#   name: Commit Message Starts with Uppercase
+#   description: Verifies that the commit message starts with an uppercase letter.
+#   entry: commit_message_uppercase
+#   language: python
+#   stages: [commit-msg]
 - id: pre_commit_hook
   name: Check hardcoded credentials
   description: Checks the commit additions in order to prevent credentials to be pushed to GitHub.
