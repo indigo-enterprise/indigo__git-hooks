@@ -1,3 +1,4 @@
+import os
 import subprocess
 import sys
 
@@ -15,34 +16,25 @@ import sys
 #         print("Error al obtener el mensaje de commit.")
 #         sys.exit(1)
 def get_commit_message():
-    """Obtiene el mensaje del commit actual."""
+    """Obtiene el mensaje de commit antes de que se cree."""
+    commit_msg_file = ".git/COMMIT_EDITMSG"
+
+    if os.path.exists(commit_msg_file):
+        with open(commit_msg_file, "r", encoding="utf-8") as f:
+            return f.readline().strip()
+    
+    # Si no existe el archivo, intentamos capturar el mensaje directamente de Git
     try:
-        # Verifica si existe HEAD (para saber si hay commits previos)
-        subprocess.run(["git", "rev-parse", "--verify", "HEAD"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-        # Si HEAD existe, obtenemos el mensaje del commit actual
         result = subprocess.run(
-            ["git", "show", "-s", "--format=%B", "HEAD"],
+            ["git", "status", "-s"],
             capture_output=True,
             text=True,
             check=True
         )
+        return result.stdout.strip().split("\n")[-1]  # Última línea del mensaje de commit
     except subprocess.CalledProcessError:
-        # Si no existe HEAD (primer commit), obtenemos el mensaje en preparación
-        result = subprocess.run(
-            ["git", "var", "GIT_COMMITTER_EMAIL"],  # Comprobamos si estamos en un entorno git
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode != 0:
-            print("❌ No se pudo obtener el mensaje de commit.")
-            sys.exit(1)
-        
-        print("ℹ️ Primer commit detectado. Validando mensaje...")
-        result = subprocess.run(
-            ["git", "commit", "--verbose"],
-            capture_output=True,
-            text=True,
-        )
+        print("❌ No se pudo obtener el mensaje de commit.")
+        sys.exit(1)
 
     return result.stdout.strip()
 
