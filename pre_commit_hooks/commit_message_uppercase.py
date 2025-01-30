@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import sys
 
 def check_commit_message(commit_msg_file):
