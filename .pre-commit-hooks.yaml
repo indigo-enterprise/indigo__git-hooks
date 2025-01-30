@@ -1,3 +1,9 @@
+- id: custom-check
+  name: Custom Check Hook
+  description: Un hook personalizado para validar algo.
+  entry: python pre_commit_hooks/custom-check.py
+  language: script
+  types: [file]
 - id: pre_commit_hook
   name: Check hardcoded credentials
   description: Checks the commit additions in order to prevent credentials to be pushed to GitHub.
