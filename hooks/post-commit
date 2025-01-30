@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# start templated
+ARGS=(hook-impl --config=.pre-commit-config.yaml --hook-type=post-commit)
+# end templated
+HERE="$(cd "$(dirname "$0")" && pwd)"
+ARGS+=(--hook-dir "$HERE" -- "$@")
+if command -v pre-commit > /dev/null; then
+    exec pre-commit "${ARGS[@]}"
+else
+    echo 'pre-commit not found.  Install pre-commit with the command pip3 install pre-commit or follow the the steps on official documentation: https://pre-commit.com/#install' 1>&2
+    exit 1
+fi
