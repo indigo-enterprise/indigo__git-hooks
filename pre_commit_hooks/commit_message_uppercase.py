@@ -1,4 +1,3 @@
-import os
 import subprocess
 import sys
 
@@ -16,27 +15,28 @@ import sys
 #         print("Error al obtener el mensaje de commit.")
 #         sys.exit(1)
 def get_commit_message():
-    """Obtiene el mensaje de commit antes de que se cree."""
-    commit_msg_file = ".git/COMMIT_EDITMSG"
-
-    if os.path.exists(commit_msg_file):
-        with open(commit_msg_file, "r", encoding="utf-8") as f:
-            return f.readline().strip()
-    
-    # Si no existe el archivo, intentamos capturar el mensaje directamente de Git
+    """Obtiene el mensaje de commit usando `git commit -m "mensaje"`."""
     try:
         result = subprocess.run(
-            ["git", "status", "-s"],
+            ["git", "config", "--get", "core.editor"],
             capture_output=True,
             text=True,
             check=True
         )
-        return result.stdout.strip().split("\n")[-1]  # Última línea del mensaje de commit
-    except subprocess.CalledProcessError:
-        print("❌ No se pudo obtener el mensaje de commit.")
-        sys.exit(1)
+        if result.stdout.strip():
+            print("🔹 Usando editor de commits, validación no se ejecutará.")
+            return None
 
-    return result.stdout.strip()
+        # Si el usuario usa `git commit -m "mensaje"`
+        result = subprocess.run(
+            ["git", "log", "--format=%B", "-n", "1", "HEAD"],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        return result.stdout.strip()
+    except subprocess.CalledProcessError:
+        return None
 
 def main():
     commit_msg = get_commit_message()
