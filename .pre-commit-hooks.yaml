@@ -7,8 +7,9 @@
 - id: commit-message-uppercase
   name: Commit Message Uppercase
   description: Verifica que el mensaje de commit comience con mayúscula.
-  entry: python pre_commit_hooks/commit_message_uppercase.py
+  entry: commit_message_uppercase
   language: python
+  always_run: true
   # stages: [commit-msg]
 # - id: commit_message_uppercase
 #   name: Commit Message Starts with Uppercase
