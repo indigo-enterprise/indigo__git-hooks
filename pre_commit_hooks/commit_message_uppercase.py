@@ -25,6 +25,7 @@ def main():
 
     print(f"{commit_msg_file} --> commit_msg_file")
     print(f"{commit_msg} --> mensaje")
+    
     if not commit_msg or not commit_msg[0].isupper():
         print("El mensaje de commit debe empezar con una letra mayuscula.")
         return 1
