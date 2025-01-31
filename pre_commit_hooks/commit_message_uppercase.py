@@ -1,5 +1,5 @@
-import subprocess
-import sys
+# import subprocess
+# import sys
 
 # def get_commit_message():
 #     """Obtiene el mensaje del último commit."""
@@ -18,6 +18,7 @@ import sys
 import sys
 
 def main():
+    print("main")
     commit_msg_file = sys.argv[1]
     
     with open(commit_msg_file, "r", encoding="utf-8") as f:
@@ -25,7 +26,7 @@ def main():
 
     print(f"{commit_msg_file} --> commit_msg_file")
     print(f"{commit_msg} --> mensaje")
-    
+
     if not commit_msg or not commit_msg[0].isupper():
         print("El mensaje de commit debe empezar con una letra mayuscula.")
         return 1
