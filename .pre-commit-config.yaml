@@ -8,6 +8,8 @@ repos:
       - id: post_commit_hook
         stages: [post-commit]
       - id: commit-message-uppercase
+      - id: detect-secrets
+        stages: [pre-commit]
       
 # repos:
 # -   repo: https://github.com/pre-commit/pre-commit-hooks

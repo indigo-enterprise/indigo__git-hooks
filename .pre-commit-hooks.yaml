@@ -11,6 +11,12 @@
   language: python
   stages: [commit-msg]
   always_run: true
+- id: detect-secrets
+  name: Detecta credenciales expuestas
+  entry: detect_secrets
+  language: system  # Usa el intérprete de Python del sistema
+  files: ""
+  stages: [pre-commit]
   # stages: [commit-msg]
 # - id: pre_commit_hook
 #   name: Check hardcoded credentials
