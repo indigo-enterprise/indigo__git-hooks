@@ -14,7 +14,7 @@
 - id: detect-secrets
   name: Detecta credenciales expuestas
   entry: detect_secrets
-  language: system  # Usa el intérprete de Python del sistema
+  language: python
   files: ""
   stages: [pre-commit]
   # stages: [commit-msg]
