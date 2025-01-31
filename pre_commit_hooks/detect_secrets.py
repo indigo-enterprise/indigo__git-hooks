@@ -14,6 +14,28 @@ SENSITIVE_PATTERNS = [
     r'(?i)aws_access_key_id(=|:|\s+)(["\'])?AKIA[0-9A-Z]{16}(["\'])?',
     r'(?i)aws_secret_access_key(=|:|\s+)(["\'])?\w{40}(["\'])?',
     r'postgres(ql)?://\w+:\w+@',  # URLs con usuario y contraseña
+
+     # Cadenas de conexión de .NET Core (ej: SQL Server, MySQL)
+    r'(?i)(ConnectionString|DataSource)(=|\s*:)\s*["\'][^"\']*[Pp]assword=[^"\']*["\']',
+    r'(?i)Server=[^;]+;Database=[^;]+;(User\s*Id|Uid)=[^;]+;(Password|Pwd)=[^;]+;',
+
+    # Credenciales de bases de datos en cualquier formato
+    r'(?i)(user|username|uid|userid|user\s*id)(\s*[:=]\s*["\']?)[^\s"\']+',
+    r'(?i)(password|pwd|pass)(\s*[:=]\s*["\']?)[^\s"\']+',
+
+    # Cadenas de conexión específicas
+    r'(?i)mysql://[^:]+:[^@]+@',  # MySQL URL con credenciales
+    r'(?i)postgres(ql)?://[^:]+:[^@]+@',  # PostgreSQL
+    r'(?i)mongodb(\+srv)?://[^:]+:[^@]+@',  # MongoDB
+    r'(?i)sqlserver://[^:]+:[^@]+@',  # SQL Server
+    r'(?i)jdbc:(mysql|postgresql|sqlserver):.*[user|password]=.*',
+
+    # Ejemplos comunes de .NET Core
+    r'(?i)"DefaultConnection"\s*:\s*"[^"]*[Pp]assword=[^";]*"',
+    r'(?i)Initial\s*Catalog\s*=\s*[^;]+;User\s*ID\s*=\s*[^;]+;Password\s*=\s*[^;]+',
+    
+    # Detección de formato key=value con credenciales
+    r'(?i)(\b|_)(user|pass|pwd|creds|credentials)(\b|_)\s*[=:]\s*["\']?[^"\'\s<>]+'
 ]
 
 # Archivos o directorios a excluir (ej: .env, configs permitidas)
@@ -62,7 +84,7 @@ def main():
         if findings:
             print(f"Error: Archivo '{file_path}' contiene patrones sensibles:")
             for pattern in findings:
-                print(f"  - Patrón detectado: {pattern}")
+                print(f"  - Patron detectado: {pattern}")
             has_errors = True
 
     if has_errors:
