@@ -5,37 +5,22 @@ import subprocess
 
 # Patrones de expresiones regulares para detectar información sensible
 SENSITIVE_PATTERNS = [
-    r'client_?id(=|:|\s+)(["\'])?\w+(["\'])?',  # client_id, client-id, clientId
-    r'client_?secret(=|:|\s+)(["\'])?\w+(["\'])?',
-    r'api_?key(=|:|\s+)(["\'])?\w+(["\'])?',
-    r'token(=|:|\s+)(["\'])?\w+(["\'])?',
-    r'password(=|:|\s+)(["\'])?\w+(["\'])?',
-    r'secret(=|:|\s+)(["\'])?\w+(["\'])?',
+   # Claves y secretos comunes
+    r'(?i)(client_?id|client_?secret|api_?key|token|password|secret)(=|:|\s+)(["\'])?\w+(["\'])?',
+
+    # AWS Keys
     r'(?i)aws_access_key_id(=|:|\s+)(["\'])?AKIA[0-9A-Z]{16}(["\'])?',
     r'(?i)aws_secret_access_key(=|:|\s+)(["\'])?\w{40}(["\'])?',
-    r'postgres(ql)?://\w+:\w+@',  # URLs con usuario y contraseña
 
-     # Cadenas de conexión de .NET Core (ej: SQL Server, MySQL)
-    r'(?i)(ConnectionString|DataSource)(=|\s*:)\s*["\'][^"\']*[Pp]assword=[^"\']*["\']',
+    # Cadenas de conexión (bases de datos y URLs con credenciales)
+    r'(?i)(postgres(ql)?|mysql|mongodb(\+srv)?|sqlserver|jdbc:(mysql|postgresql|sqlserver))://[^:]+:[^@]+@',
     r'(?i)Server=[^;]+;Database=[^;]+;(User\s*Id|Uid)=[^;]+;(Password|Pwd)=[^;]+;',
-
-    # Credenciales de bases de datos en cualquier formato
-    r'(?i)(user|username|uid|userid|user\s*id)(\s*[:=]\s*["\']?)[^\s"\']+',
-    r'(?i)(password|pwd|pass)(\s*[:=]\s*["\']?)[^\s"\']+',
-
-    # Cadenas de conexión específicas
-    r'(?i)mysql://[^:]+:[^@]+@',  # MySQL URL con credenciales
-    r'(?i)postgres(ql)?://[^:]+:[^@]+@',  # PostgreSQL
-    r'(?i)mongodb(\+srv)?://[^:]+:[^@]+@',  # MongoDB
-    r'(?i)sqlserver://[^:]+:[^@]+@',  # SQL Server
-    r'(?i)jdbc:(mysql|postgresql|sqlserver):.*[user|password]=.*',
-
-    # Ejemplos comunes de .NET Core
+    r'(?i)(ConnectionString|DataSource)(=|\s*:)\s*["\'][^"\']*[Pp]assword=[^"\']*["\']',
     r'(?i)"DefaultConnection"\s*:\s*"[^"]*[Pp]assword=[^";]*"',
     r'(?i)Initial\s*Catalog\s*=\s*[^;]+;User\s*ID\s*=\s*[^;]+;Password\s*=\s*[^;]+',
-    
-    # Detección de formato key=value con credenciales
-    r'(?i)(\b|_)(user|pass|pwd|creds|credentials)(\b|_)\s*[=:]\s*["\']?[^"\'\s<>]+'
+
+    # Credenciales en formato clave-valor
+    r'(?i)(\b|_)(user|username|uid|userid|pass|pwd|creds|credentials)(\b|_)\s*[=:]\s*["\']?[^"\'\s<>]+',
 ]
 
 # Archivos o directorios a excluir (ej: .env, configs permitidas)
