@@ -205,6 +205,7 @@ def scan_file(file_path):
     for pattern in SENSITIVE_PATTERNS:
         if re.search(pattern, content, re.IGNORECASE):
             findings.append(pattern)
+            print(f"  - Contenido detectado: {content}")
     return findings
 
 def main():
