@@ -6,7 +6,7 @@ import subprocess
 # Patrones de expresiones regulares para detectar información sensible
 SENSITIVE_PATTERNS = [
    # Claves y secretos comunes
-    r'(?i)(client_?id|client_?secret|api_?key|token|password|secret)(=|:|\s+)(["\'])?\w+(["\'])?',
+    r'(?i)(client_?id|client_?secret|api_?key|token|password|secret)"?\s*(=|:)\s*["\']{1}[^"\']{4,}["\']{1}',
 
     # AWS Keys
     r'(?i)aws_access_key_id(=|:|\s+)(["\'])?AKIA[0-9A-Z]{16}(["\'])?',
@@ -205,7 +205,6 @@ def scan_file(file_path):
     for pattern in SENSITIVE_PATTERNS:
         if re.search(pattern, content, re.IGNORECASE):
             findings.append(pattern)
-            print(f"  - Contenido detectado: {content}")
     return findings
 
 def main():
