@@ -20,7 +20,7 @@ SENSITIVE_PATTERNS = [
     r'(?i)Initial\s*Catalog\s*=\s*[^;]+;User\s*ID\s*=\s*[^;]+;Password\s*=\s*[^;]+',
 
     # Credenciales en formato clave-valor
-    r'(?i)(\b|_)(user|username|uid|userid|pass|pwd|creds|credentials)(\b|_)\s*[=:]\s*["\']?[^"\'\s<>]+',
+    r'(?i)(\b|_)(user|username|uid|userid|pass|pwd|creds|credentials)(\b|_)?\s*[=:]\s*["\']{1}[^"\'\s<>]{4,}["\']{1}',
 
      # Claves de API de Google
     r'AIza[0-9A-Za-z-_]{35}',
