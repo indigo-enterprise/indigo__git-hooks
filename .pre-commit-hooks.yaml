@@ -15,8 +15,9 @@
   name: Detecta credenciales expuestas
   entry: detect_secrets
   language: python
-  files: ""
   stages: [pre-commit]
+  pass_filenames: false
+  always_run: true
 # - id: pre_commit_hook
 #   name: Check hardcoded credentials
 #   description: Checks the commit additions in order to prevent credentials to be pushed to GitHub.
