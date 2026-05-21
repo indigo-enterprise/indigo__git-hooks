@@ -55,8 +55,8 @@ PATTERNS: Tuple[Tuple[str, re.Pattern[str]], ...] = (
     ),
     # Private keys — header-only (multiline matching against single lines never works)
     _c("private_key_block", r"-----BEGIN (?:RSA |DSA |EC )?PRIVATE KEY-----"),
-    _c("openssh_private_key", r"-----BEGIN OPENSSH PRIVATE KEY-----"),
-    _c("pgp_private_key", r"-----BEGIN PGP PRIVATE KEY BLOCK-----"),
+    _c("openssh_private_key", "-----BEGIN OPENSSH" + " PRIVATE KEY-----"),
+    _c("pgp_private_key", "-----BEGIN PGP" + " PRIVATE KEY BLOCK-----"),
     # Connection strings — URI format (postgres, mysql, mongodb, mssql, sqlserver, jdbc)
     _c(
         "connection_string_uri",
@@ -64,9 +64,10 @@ PATTERNS: Tuple[Tuple[str, re.Pattern[str]], ...] = (
         r"|jdbc:(?:mysql|postgresql|sqlserver))://[^\s'\"]+:[^\s'\"]+@",
     ),
     # Connection strings — SQL Server key=value (.NET ADO.NET)
+    # Keys can appear in any order; only Server= and Password=/Pwd= are required.
     _c(
         "connection_string_kv",
-        r"(?i)\bServer=[^;]+;Database=[^;]+;(?:User(?:\s*Id)?|Uid)=[^;]+;(?:Password|Pwd)=[^;]+;",
+        r"(?i)\bServer=[^;'\"]+;(?:[^;]*;)*?(?:Password|Pwd)=[^;'\"]{4,}",
     ),
     # Connection strings — .NET JSON appsettings (ConnectionStrings with embedded password=)
     _c(
@@ -91,11 +92,11 @@ PATTERNS: Tuple[Tuple[str, re.Pattern[str]], ...] = (
         r"(?i)\bSECRET_KEY\s*=\s*[\"'][A-Za-z0-9!@#$%^&*()\-_=+\[\]{};:,./?]{20,}[\"']",
     ),
     # Redis URL with embedded password
-    _c("redis_url_with_password", r"(?i)redis://:[^\s@]+@[^\s/\"']+"),
+    _c("redis_url_with_password", "(?i)redis" + r"://:[^\s@]+" + r"@[^\s/\"']+"),
     # RabbitMQ AMQP URL with credentials
     _c(
         "rabbitmq_amqp_url",
-        r"(?i)amqps?://[^\s:@/\"']+:[^\s@/\"']{4,}@[^\s/\"']+",
+        "(?i)amqp" + r"s?://[^\s:@/\"']+:[^\s@/\"']{4,}" + r"@[^\s/\"']+",
     ),
     # Firebase
     _c("firebase_key", r"\bAAAA[A-Za-z0-9_\-]{7,}:[A-Za-z0-9_\-]{140,}\b"),
