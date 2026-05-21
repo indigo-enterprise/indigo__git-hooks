@@ -67,15 +67,16 @@ PATTERNS: Tuple[Tuple[str, re.Pattern[str]], ...] = (
     # Fires when Server has a real value (4+ chars) AND either:
     #   (a) Database/Initial Catalog has a value, OR
     #   (b) Password/Pwd has a value (4+ chars)
+    # Env-var references (${VAR}, %VAR%, #{VAR}#, $(VAR)) in Server value are excluded.
     _c(
         "connection_string_kv",
-        r"(?i)\b(?:Server|Data Source)=[^;'\"]{4,};(?:[^;]*;)*"
-        r"(?:(?:(?:Database|Initial Catalog)=[^;'\"]+)|(?:(?:Password|Pwd)=[^;'\"]{4,}))",
+        r"(?i)\b(?:Server|Data Source)=(?!\$\{|%[A-Z_]|\#\{|\$\()[^;'\"]{4,};(?:[^;]*;)*"
+        r"(?:(?:(?:Database|Initial Catalog)=[^;'\"]+)|(?:(?:Password|Pwd)=(?!\$\{|%[A-Z_]|\#\{|\$\()[^;'\"]{4,}))",
     ),
     # Connection strings — .NET JSON appsettings (ConnectionStrings with embedded password=)
     _c(
         "connection_string_json",
-        r"(?i)\b(ConnectionStrings|ConnectionString|DataSource)\b\s*[:=]\s*[\"'][^\"']*password=[^;\"']{4,}[^\"']*[\"']",
+        r"(?i)\b(ConnectionStrings|ConnectionString|DataSource)\b\s*[:=]\s*[\"'][^\"']*password=(?!\$\{|%[A-Z_]|\#\{|\$\()[^;\"']{4,}[^\"']*[\"']",
     ),
     # Azure Storage connection string
     _c(
@@ -103,6 +104,37 @@ PATTERNS: Tuple[Tuple[str, re.Pattern[str]], ...] = (
     ),
     # Firebase
     _c("firebase_key", r"\bAAAA[A-Za-z0-9_\-]{7,}:[A-Za-z0-9_\-]{140,}\b"),
+    # HashiCorp Vault service token
+    _c("hashicorp_vault_token", r"\bhvs\.[A-Za-z0-9_\-]{24,}\b"),
+    # Azure AD / Entra ID client secret
+    _c(
+        "azure_ad_client_secret",
+        r"(?i)client[_-]?secret\s*[:=]\s*[\"']?[A-Za-z0-9~._\-]{32,}[\"']?",
+    ),
+    # Sentry DSN
+    _c(
+        "sentry_dsn",
+        r"https://[a-f0-9]{32}@[^/]+\.ingest(?:\.us)?\.sentry\.io/[0-9]+",
+    ),
+    # GCP service account email (from JSON key file)
+    _c(
+        "gcp_service_account",
+        r'"client_email"\s*:\s*"[^@\"]+@[^.\"]+\.iam\.gserviceaccount\.com"',
+    ),
+    # Braintree access token
+    _c(
+        "braintree_access_token",
+        r"access_token\$production\$[0-9a-z]{16}\$[0-9a-f]{32}",
+    ),
+    # Microsoft Teams incoming webhook URL
+    _c(
+        "teams_webhook_url",
+        r"https://[a-z0-9]+\.webhook\.office\.com/webhookb2/",
+    ),
+    # Azure SAS token (query string signature)
+    _c("azure_sas_token", r"(?i)[?&]sig=[A-Za-z0-9%+/]{40,}"),
+    # Datadog API key
+    _c("datadog_api_key", r"(?i)\bDD_API_KEY\s*[:=]\s*[a-f0-9]{32}\b"),
 )
 
 COMMENT_LINE = re.compile(r"^\s*(//|/\*|\*|#|;|--|'|\s*\*\s)")
@@ -113,6 +145,9 @@ INCLUDE_EXTS = {
     ".json", ".yml", ".yaml", ".toml", ".ini", ".xml",
     ".go", ".env",
     ".py", ".config",
+    ".sh", ".ps1",
+    ".tf", ".tfvars",
+    ".sql",
 }
 
 INCLUDE_FILENAMES = {
@@ -123,11 +158,14 @@ INCLUDE_FILENAMES = {
     "package.json",
     "vite.config.ts",
     "vite.config.js",
+    "Dockerfile",
+    "dockerfile",
 }
 
 EXCLUDED_DIR_PARTS = {
     "node_modules", "dist", "build", "out", "bin", "obj", ".git",
     ".venv", "venv", "__pycache__", "vendor",
+    ".terraform", "coverage", "migrations", "target", "packages",
 }
 
 

@@ -27,6 +27,14 @@ _DJANGO_KEY   = "abcdefghij" + "0123456789klmnopqrstuv"
 _AZ_ACCT_KEY  = "dGVzdGtleXRlc3Rr" + "ZXl0ZXN0a2V5dGVzdGtleXRlc3RrZXk="
 _AZ_SB_KEY    = "dGVzdGtleXRlc3Rr" + "ZXl0ZXN0a2V5dGVzdGtleXRlc3RrZXk="
 _AWS_SECRET   = "wJalrXUtnFEMI/K7MDENG/" + "bPxRfiCYEXAMPLEKEY"
+_VAULT_TOKEN  = "hvs." + "A" * 24
+_AZURE_AD_SEC = "A" * 20 + "~.B-" + "C" * 12
+_SENTRY_DSN   = "https://" + "ab01cd23" * 4 + "@o123.ingest.sentry.io/9001"
+_GCP_SA_LINE  = '"client_email"' + ': "svc-deploy@my-project.iam.gserviceaccount.com"'
+_BRAINTREE    = "access_token$production$" + "abcdef1234567890" + "$" + "a" * 32
+_TEAMS_WH     = "https://mycompany.webhook.office.com" + "/webhookb2/abc-123"
+_AZ_SAS_PARAM = "?sig=" + "A" * 40
+_DD_API_VAL   = "a" * 32
 
 
 # ── scan_text: positive cases ────────────────────────────────────────────────
@@ -64,35 +72,51 @@ POSITIVE_CASES = [
      f"Endpoint=sb://mynamespace.servicebus.windows.net/;"
      f"SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey={_AZ_SB_KEY}"),
     ("redis_url_with_password",
-     "REDIS_URL=redis://:supersecretpass@redis.example.com:6379"),
+     "REDIS_URL=redis" + "://:supersecretpass@redis.example.com:6379"),
     ("rabbitmq_amqp_url",
-     "AMQP_URL=amqp://user:password@rabbitmq.host:5672/vhost"),
+     "AMQP_URL=amqp" + "://user:password@rabbitmq.host:5672/vhost"),
     ("private_key_block",
-     "-----BEGIN RSA PRIVATE KEY-----"),
+     "-----BEGIN RSA " + "PRIVATE KEY-----"),
     ("private_key_block",
-     "-----BEGIN EC PRIVATE KEY-----"),
+     "-----BEGIN EC " + "PRIVATE KEY-----"),
     ("private_key_block",
-     "-----BEGIN PRIVATE KEY-----"),
+     "-----BEGIN " + "PRIVATE KEY-----"),
     ("openssh_private_key",
-     "-----BEGIN OPENSSH PRIVATE KEY-----"),
+     "-----BEGIN OPENSSH" + " PRIVATE KEY-----"),
     ("pgp_private_key",
-     "-----BEGIN PGP PRIVATE KEY BLOCK-----"),
+     "-----BEGIN PGP" + " PRIVATE KEY BLOCK-----"),
     ("connection_string_uri",
-     "postgres://user:s3cr3tpass@db.example.com:5432/mydb"),
+     "postgres" + "://user:s3cr3tpass@db.example.com:5432/mydb"),
     ("connection_string_uri",
-     "mongodb://admin:hunter2@mongo.host:27017/mydb"),
+     "mongodb" + "://admin:hunter2@mongo.host:27017/mydb"),
     ("connection_string_kv",
-     "Server=myserver;Database=mydb;User Id=sa;Password=MyP@ssword!;"),
+     "Server" + "=myserver;Database=mydb;User Id=sa;Password=MyP@ssword!;"),
     ("firebase_key",
      _FIREBASE),
+    ("hashicorp_vault_token",
+     f"VAULT_TOKEN={_VAULT_TOKEN}"),
+    ("azure_ad_client_secret",
+     f"client_secret = {_AZURE_AD_SEC}"),
+    ("sentry_dsn",
+     _SENTRY_DSN),
+    ("gcp_service_account",
+     _GCP_SA_LINE),
+    ("braintree_access_token",
+     _BRAINTREE),
+    ("teams_webhook_url",
+     _TEAMS_WH),
+    ("azure_sas_token",
+     f"https://storage.blob.core.windows.net/container/file{_AZ_SAS_PARAM}"),
+    ("datadog_api_key",
+     f"DD_API_KEY={_DD_API_VAL}"),
     ("jwt",
      "eyJhbGciOiJIUzI1NiJ9"
      ".eyJzdWIiOiJ1c2VySWQifQ"
      ".SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"),
     ("generic_api_key",
-     "api_key = AbCdEfGhIjKlMnOpQrSt"),
+     "api" + "_key = AbCdEfGhIjKlMnOpQrSt"),
     ("generic_api_key",
-     "password = AbCdEfGhIjKlMnOpQrSt"),
+     "pass" + "word = AbCdEfGhIjKlMnOpQrSt"),
 ]
 
 
@@ -124,6 +148,10 @@ NEGATIVE_CASES = [
     "const version = '1.2.3'",
     "import os",
     "DEBUG = True",
+    "client_secret = short",               # azure_ad_client_secret too short
+    "hvs." + "short",                      # vault token too short
+    "DD_API_KEY=notvalidhex!!!!!!!!!!!!!", # datadog key not hex
+    "sig=" + "A" * 10,                     # azure SAS sig too short
 ]
 
 
@@ -136,7 +164,7 @@ def test_scan_text_no_false_positives(line: str) -> None:
 # ── Comment line behaviour ───────────────────────────────────────────────────
 
 def test_generic_api_key_skipped_in_comment() -> None:
-    line = "// api_key = AbCdEfGhIjKlMnOpQrStUvWx"
+    line = "// api" + "_key = AbCdEfGhIjKlMnOpQrStUvWx"
     findings = scan_text(line)
     assert not any(f[1] == "generic_api_key" for f in findings)
 
@@ -148,7 +176,7 @@ def test_aws_key_caught_in_comment() -> None:
 
 
 def test_pem_header_caught_in_comment() -> None:
-    line = "# -----BEGIN RSA PRIVATE KEY-----"
+    line = "# -----BEGIN RSA " + "PRIVATE KEY-----"
     findings = scan_text(line)
     assert any(f[1] == "private_key_block" for f in findings)
 
@@ -176,6 +204,12 @@ def test_mask_short_value() -> None:
     "src/App.tsx",
     "backend/main.go",
     "appsettings.Development.json",
+    "scripts/deploy.sh",
+    "infra/main.tf",
+    "infra/secrets.tfvars",
+    "scripts/bootstrap.ps1",
+    "db/seed.sql",
+    "Dockerfile",
 ])
 def test_should_include_positive(path: str) -> None:
     assert _should_include(path) is True
@@ -193,6 +227,11 @@ def test_should_include_positive(path: str) -> None:
     "image.png",
     "README.md",
     "notes.txt",
+    ".terraform/providers/registry.terraform.io/main.tf",
+    "coverage/lcov.info",
+    "migrations/0001_initial.py",
+    "target/classes/App.class",
+    "packages/lodash/index.js",
 ])
 def test_should_include_negative(path: str) -> None:
     assert _should_include(path) is False
@@ -229,13 +268,13 @@ def test_main_azure_storage_returns_1(tmpdir) -> None:
 
 def test_main_connection_string_kv_returns_1(tmpdir) -> None:
     f = tmpdir.join("app.config")
-    f.write("Server=myserver;Database=mydb;User Id=sa;Password=MyP@ssword!;\n")
+    f.write("Server" + "=myserver;Database=mydb;User Id=sa;Password=MyP@ssword!;\n")
     assert main([str(f)]) == 1
 
 
 def test_main_redis_url_returns_1(tmpdir) -> None:
     f = tmpdir.join("config.env")
-    f.write("REDIS_URL=redis://:supersecretpass@redis.example.com:6379\n")
+    f.write("REDIS_URL=redis" + "://:supersecretpass@redis.example.com:6379\n")
     assert main([str(f)]) == 1
 
 
@@ -255,7 +294,7 @@ def test_main_skips_vendor_directory(tmpdir) -> None:
 
 def test_main_skips_non_included_extension(tmpdir) -> None:
     f = tmpdir.join("notes.md")
-    f.write("secret = AbCdEfGhIjKlMnOpQrStUvWxYz\n")
+    f.write("sec" + "ret = AbCdEfGhIjKlMnOpQrStUvWxYz\n")
     assert main([str(f)]) == 0
 
 
