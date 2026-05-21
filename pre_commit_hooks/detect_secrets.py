@@ -72,7 +72,7 @@ PATTERNS: Tuple[Tuple[str, re.Pattern[str]], ...] = (
     # Connection strings — .NET JSON appsettings (ConnectionStrings with embedded password=)
     _c(
         "connection_string_json",
-        r"(?i)\b(ConnectionStrings|ConnectionString|DataSource)\b\s*[:=]\s*[\"'][^\"']*password=[^\"']*[\"']",
+        r"(?i)\b(ConnectionStrings|ConnectionString|DataSource)\b\s*[:=]\s*[\"'][^\"']*password=[^;\"']{4,}[^\"']*[\"']",
     ),
     # Azure Storage connection string
     _c(
