@@ -1,7 +1,7 @@
 repos:
   # Websec hook is MANDATORY, DO NOT comment it.
   - repo: https://github.com/indigo-enterprise/indigo__git-hooks
-    rev: v0.0.9
+    rev: v0.0.10
     hooks:
       # - id: pre_commit_hook
       #   stages: [commit]
