@@ -64,10 +64,13 @@ PATTERNS: Tuple[Tuple[str, re.Pattern[str]], ...] = (
         r"|jdbc:(?:mysql|postgresql|sqlserver))://[^\s'\"]+:[^\s'\"]+@",
     ),
     # Connection strings — SQL Server key=value (.NET ADO.NET)
-    # Keys can appear in any order; only Server= and Password=/Pwd= are required.
+    # Fires when Server has a real value (4+ chars) AND either:
+    #   (a) Database/Initial Catalog has a value, OR
+    #   (b) Password/Pwd has a value (4+ chars)
     _c(
         "connection_string_kv",
-        r"(?i)\bServer=[^;'\"]+;(?:[^;]*;)*?(?:Password|Pwd)=[^;'\"]{4,}",
+        r"(?i)\b(?:Server|Data Source)=[^;'\"]{4,};(?:[^;]*;)*"
+        r"(?:(?:(?:Database|Initial Catalog)=[^;'\"]+)|(?:(?:Password|Pwd)=[^;'\"]{4,}))",
     ),
     # Connection strings — .NET JSON appsettings (ConnectionStrings with embedded password=)
     _c(
